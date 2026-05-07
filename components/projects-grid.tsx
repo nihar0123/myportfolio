@@ -16,6 +16,7 @@ const projects = [
     stars: 0,
     forks: 0,
     url: "https://github.com/nihar0123",
+    homepage: "https://devpilotai.dev",
     featured: true,
     highlight: true,
   },
