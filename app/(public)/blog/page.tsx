@@ -1,9 +1,8 @@
 import { BlogHero } from "@/components/public/blog/blog-hero";
 import { BlogList } from "@/components/public/blog/blog-list";
 import { BlogSidebar } from "@/components/public/blog/blog-sidebar";
+import { SITE_URL } from "@/lib/site";
 import type { Metadata } from "next";
-
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eindev.ir';
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -11,11 +10,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Blog — EINCODE",
     description: "Technical articles, experiments, and insights from the digital laboratory.",
-    url: `${baseUrl}/blog`,
+    url: `${SITE_URL}/blog`,
     type: "website",
     images: [
       {
-        url: `${baseUrl}/og-image-blog.png`,
+        url: `${SITE_URL}/og-image-blog.png`,
         width: 1200,
         height: 630,
         alt: "EINCODE Blog",
@@ -26,10 +25,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Blog — EINCODE",
     description: "Technical articles, experiments, and insights from the digital laboratory.",
-    images: [`${baseUrl}/og-image-blog.png`],
+    images: [`${SITE_URL}/og-image-blog.png`],
   },
   alternates: {
-    canonical: `${baseUrl}/blog`,
+    canonical: `${SITE_URL}/blog`,
   },
 };
 

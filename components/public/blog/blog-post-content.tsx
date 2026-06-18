@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
+import ReactMarkdown, { type Components } from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { cn } from "@/lib/utils"
 import { ArrowLeft, Calendar, Clock, Bookmark, Twitter, Linkedin, Link2, ChevronUp } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -12,6 +14,80 @@ interface BlogPostContentProps {
   post: BlogPost
 }
 
+const markdownComponents: Components = {
+  h1: ({ children, ...props }) => (
+    <h1 className="mb-6 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl" {...props}>
+      {children}
+    </h1>
+  ),
+  h2: ({ children, ...props }) => (
+    <h2 className="mb-4 mt-12 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl" {...props}>
+      {children}
+    </h2>
+  ),
+  h3: ({ children, ...props }) => (
+    <h3 className="mb-3 mt-8 text-xl font-semibold tracking-tight text-foreground" {...props}>
+      {children}
+    </h3>
+  ),
+  p: ({ children, ...props }) => (
+    <p className="mb-4 leading-relaxed text-muted-foreground" {...props}>
+      {children}
+    </p>
+  ),
+  ul: ({ children, ...props }) => (
+    <ul className="mb-6 ml-6 list-disc space-y-2 text-muted-foreground" {...props}>
+      {children}
+    </ul>
+  ),
+  ol: ({ children, ...props }) => (
+    <ol className="mb-6 ml-6 list-decimal space-y-2 text-muted-foreground" {...props}>
+      {children}
+    </ol>
+  ),
+  li: ({ children, ...props }) => (
+    <li className="leading-relaxed" {...props}>
+      {children}
+    </li>
+  ),
+  blockquote: ({ children, ...props }) => (
+    <blockquote className="mb-6 border-l-4 border-primary/60 pl-4 italic text-muted-foreground" {...props}>
+      {children}
+    </blockquote>
+  ),
+  a: ({ children, href, ...props }) => (
+    <a
+      href={href}
+      className="text-primary underline-offset-4 transition-colors hover:underline"
+      rel={href?.startsWith("http") ? "noreferrer noopener" : undefined}
+      target={href?.startsWith("http") ? "_blank" : undefined}
+      {...props}
+    >
+      {children}
+    </a>
+  ),
+  pre: ({ children, ...props }) => (
+    <pre className="mb-6 overflow-x-auto rounded-xl border border-border/50 bg-card/80 p-4 text-sm text-foreground" {...props}>
+      {children}
+    </pre>
+  ),
+  code: ({ inline, className, children, ...props }) => {
+    if (inline) {
+      return (
+        <code className="rounded bg-secondary/60 px-1.5 py-0.5 font-mono text-sm text-primary" {...props}>
+          {children}
+        </code>
+      )
+    }
+
+    return (
+      <code className={cn("font-mono text-sm text-foreground", className)} {...props}>
+        {children}
+      </code>
+    )
+  },
+}
+
 export function BlogPostContent({ post }: BlogPostContentProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [showScrollTop, setShowScrollTop] = useState(false)
@@ -20,14 +96,17 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
   const relatedPosts = getRelatedPosts(post.slug)
 
   useEffect(() => {
-    setIsVisible(true)
+    const frame = requestAnimationFrame(() => setIsVisible(true))
 
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 500)
     }
 
     window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener("scroll", handleScroll)
+    }
   }, [])
 
   const handleCopyLink = () => {
@@ -155,24 +234,13 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
             {/* Main Content */}
             <article
               ref={contentRef}
-              className={cn(
-                "prose prose-invert prose-lg max-w-none opacity-0",
-                "prose-headings:font-semibold prose-headings:tracking-tight",
-                "prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:text-gradient",
-                "prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3",
-                "prose-p:text-muted-foreground prose-p:leading-relaxed",
-                "prose-a:text-primary prose-a:no-underline hover:prose-a:underline",
-                "prose-strong:text-foreground prose-strong:font-semibold",
-                "prose-code:text-primary prose-code:bg-secondary/60 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-none prose-code:after:content-none",
-                "prose-pre:bg-card/80 prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl prose-pre:p-4 prose-pre:overflow-x-auto",
-                "prose-ul:text-muted-foreground prose-ol:text-muted-foreground",
-                "prose-li:marker:text-primary",
-                "prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground prose-blockquote:italic",
-                isVisible && "animate-fade-in-up",
-              )}
+              className={cn("prose prose-invert prose-lg max-w-none opacity-0", isVisible && "animate-fade-in-up")}
               style={{ animationDelay: "350ms" }}
-              dangerouslySetInnerHTML={{ __html: parseMarkdown(post.content) }}
-            />
+            >
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                {post.content}
+              </ReactMarkdown>
+            </article>
 
             {/* Sticky Share Sidebar */}
             <aside
@@ -347,41 +415,5 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
         <ChevronUp className="h-5 w-5" />
       </button>
     </>
-  )
-}
-
-// Simple markdown parser for rendering content
-function parseMarkdown(content: string): string {
-  return (
-    content
-      // Headers
-      .replace(/^### (.*$)/gm, "<h3>$1</h3>")
-      .replace(/^## (.*$)/gm, "<h2>$1</h2>")
-      .replace(/^# (.*$)/gm, "<h1>$1</h1>")
-      // Bold
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      // Italic
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      // Code blocks
-      .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
-      // Inline code
-      .replace(/`([^`]+)`/g, "<code>$1</code>")
-      // Unordered lists
-      .replace(/^- (.*$)/gm, "<li>$1</li>")
-      .replace(/(<li>.*<\/li>)\n(?=<li>)/g, "$1")
-      .replace(/(<li>.*<\/li>)(?:\n|$)/g, "<ul>$1</ul>")
-      // Ordered lists
-      .replace(/^\d+\. (.*$)/gm, "<li>$1</li>")
-      // Paragraphs
-      .replace(/\n\n(?!<)/g, "</p><p>")
-      .replace(/^(?!<)(.+)$/gm, "<p>$1</p>")
-      // Clean up empty paragraphs
-      .replace(/<p><\/p>/g, "")
-      .replace(/<p>(<h[1-3]>)/g, "$1")
-      .replace(/(<\/h[1-3]>)<\/p>/g, "$1")
-      .replace(/<p>(<pre>)/g, "$1")
-      .replace(/(<\/pre>)<\/p>/g, "$1")
-      .replace(/<p>(<ul>)/g, "$1")
-      .replace(/(<\/ul>)<\/p>/g, "$1")
   )
 }

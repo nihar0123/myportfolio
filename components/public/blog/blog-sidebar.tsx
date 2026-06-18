@@ -7,14 +7,7 @@ import { cn } from "@/lib/utils"
 import { Mail, Rss, Search, Tag, TrendingUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-
-const categories = [
-  { name: "All Posts", count: 12, slug: "all" },
-  { name: "AI & Machine Learning", count: 4, slug: "ai" },
-  { name: "Frontend", count: 3, slug: "frontend" },
-  { name: "Systems & DevOps", count: 3, slug: "systems" },
-  { name: "Design", count: 2, slug: "design" },
-]
+import { getBlogSidebarCategories } from "@/lib/blog-data"
 
 const popularTags = ["nextjs", "react", "typescript", "llm", "rust", "linux", "python", "tailwind", "wasm", "rag"]
 
@@ -23,6 +16,7 @@ export function BlogSidebar() {
   const [activeCategory, setActiveCategory] = useState("all")
   const [email, setEmail] = useState("")
   const sidebarRef = useRef<HTMLDivElement>(null)
+  const categories = getBlogSidebarCategories()
 
   useEffect(() => {
     const observer = new IntersectionObserver(

@@ -35,7 +35,7 @@ export default function ContactPage() {
             </div>
 
             <p className="text-base sm:text-lg leading-relaxed text-muted-foreground max-w-3xl">
-              I'm always interested in new opportunities and collaborations in AI/ML engineering.
+              I&apos;m always interested in new opportunities and collaborations in AI/ML engineering.
               Feel free to reach out through any of the channels below.
             </p>
           </div>

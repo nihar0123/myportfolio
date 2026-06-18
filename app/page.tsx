@@ -1,15 +1,14 @@
 import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
 import { ProjectsGrid } from "@/components/projects-grid"
-import { LabNotes } from "@/components/lab-notes"
 import { Workbench } from "@/components/workbench"
 import { Footer } from "@/components/footer"
 import { CursorGlow } from "@/components/cursor-glow"
+import { SITE_URL } from "@/lib/site"
 import { generateWebsiteStructuredData, generatePersonStructuredData } from "@/lib/structured-data"
 
 export default function Home() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eindev.ir'
-  const websiteStructuredData = generateWebsiteStructuredData(baseUrl)
+  const websiteStructuredData = generateWebsiteStructuredData(SITE_URL)
   const personStructuredData = generatePersonStructuredData()
 
   return (
@@ -28,7 +27,6 @@ export default function Home() {
           <Header />
           <HeroSection />
           <ProjectsGrid />
-          <LabNotes />
           <Workbench />
           <Footer />
         </div>

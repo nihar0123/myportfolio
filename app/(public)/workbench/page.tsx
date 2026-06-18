@@ -1,7 +1,6 @@
 import { WorkbenchPageContent } from "@/components/public/workbench/workbench-page-content";
+import { SITE_URL } from "@/lib/site";
 import type { Metadata } from "next";
-
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nb-portfolio.vercel.app';
 
 export const metadata: Metadata = {
   title: "Workbench",
@@ -10,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Workbench — NB Portfolio",
     description: "Active AI/ML projects and experiments. Currently building DevPilot AI.",
-    url: `${baseUrl}/workbench`,
+    url: `${SITE_URL}/workbench`,
     type: "website",
     images: [
       {
-        url: `${baseUrl}/og-image-workbench.png`,
+        url: `${SITE_URL}/og-image-workbench.png`,
         width: 1200,
         height: 630,
         alt: "NB Workbench",
@@ -25,10 +24,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Workbench — NB Portfolio",
     description: "Active AI/ML projects and experiments. Currently building DevPilot AI.",
-    images: [`${baseUrl}/og-image-workbench.png`],
+    images: [`${SITE_URL}/og-image-workbench.png`],
   },
   alternates: {
-    canonical: `${baseUrl}/workbench`,
+    canonical: `${SITE_URL}/workbench`,
   },
 };
 

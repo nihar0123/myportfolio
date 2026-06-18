@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
+import { SITE_URL } from "@/lib/site"
 import "./globals.css"
 
 // Configure fonts with proper options
@@ -23,7 +24,7 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://nb-portfolio.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "NB — AI/ML Engineer Portfolio",
     template: "%s | NB",

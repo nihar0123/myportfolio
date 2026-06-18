@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Github, Star, GitFork, ExternalLink, Sparkles } from "lucide-react"
 

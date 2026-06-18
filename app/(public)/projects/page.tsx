@@ -1,7 +1,6 @@
 import { ProjectsPageContent } from "@/components/public/projects/projects-page-content";
+import { SITE_URL } from "@/lib/site";
 import type { Metadata } from "next";
-
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nb-portfolio.vercel.app';
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -10,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Projects — NB Portfolio",
     description: "Explore AI/ML projects including DevPilot AI, Weapon Detection System using YOLO, and more.",
-    url: `${baseUrl}/projects`,
+    url: `${SITE_URL}/projects`,
     type: "website",
     images: [
       {
-        url: `${baseUrl}/og-image-projects.png`,
+        url: `${SITE_URL}/og-image-projects.png`,
         width: 1200,
         height: 630,
         alt: "NB Portfolio Projects",
@@ -25,10 +24,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Projects — NB Portfolio",
     description: "Explore AI/ML projects including DevPilot AI, Weapon Detection System using YOLO, and more.",
-    images: [`${baseUrl}/og-image-projects.png`],
+    images: [`${SITE_URL}/og-image-projects.png`],
   },
   alternates: {
-    canonical: `${baseUrl}/projects`,
+    canonical: `${SITE_URL}/projects`,
   },
 };
 

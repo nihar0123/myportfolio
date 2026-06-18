@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useCallback, useEffect, useState, useRef } from "react"
 import { useTheme } from "next-themes"
 import { Palette } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -16,23 +16,42 @@ export function ThemeChanger() {
   const themeInitialized = useRef(false)
   const currentThemeRef = useRef<ThemeColor>("emerald")
 
+  const applyTheme = useCallback((themeName: ThemeColor, mode?: string | null) => {
+    const themeConfig = themes[themeName]
+    // Use resolvedTheme or fallback to systemTheme, default to "light"
+    const effectiveMode = mode ?? systemTheme ?? "light"
+    const isDark = effectiveMode === "dark"
+    const colors = isDark ? themeConfig.dark : themeConfig.light
+
+    // Use double requestAnimationFrame to ensure DOM is updated after dark class change
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        Object.entries(colors).forEach(([key, value]) => {
+          document.documentElement.style.setProperty(`--${key}`, value)
+        })
+      })
+    })
+  }, [systemTheme])
+
   // Initialize theme from localStorage only once on mount
   useEffect(() => {
     if (themeInitialized.current) return
 
-    setMounted(true)
-    // Only read from localStorage after mount to avoid hydration mismatch
-    if (typeof window !== "undefined") {
-      const savedTheme = localStorage.getItem(STORAGE_KEY) as ThemeColor
-      if (savedTheme && themes[savedTheme]) {
-        currentThemeRef.current = savedTheme
-        setCurrentTheme(savedTheme)
-      } else {
-        currentThemeRef.current = "emerald"
-        setCurrentTheme("emerald")
+    const frame = requestAnimationFrame(() => {
+      setMounted(true)
+      // Only read from localStorage after mount to avoid hydration mismatch
+      if (typeof window !== "undefined") {
+        const savedTheme = localStorage.getItem(STORAGE_KEY) as ThemeColor
+        if (savedTheme && themes[savedTheme]) {
+          currentThemeRef.current = savedTheme
+          setCurrentTheme(savedTheme)
+        } else {
+          currentThemeRef.current = "emerald"
+          setCurrentTheme("emerald")
+        }
       }
-    }
-    themeInitialized.current = true
+      themeInitialized.current = true
+    })
 
     // Listen for storage changes (e.g., from other tabs) but don't override local changes
     const handleStorageChange = (e: StorageEvent) => {
@@ -42,7 +61,10 @@ export function ThemeChanger() {
       }
     }
     window.addEventListener("storage", handleStorageChange)
-    return () => window.removeEventListener("storage", handleStorageChange)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener("storage", handleStorageChange)
+    }
   }, [])
 
   // Apply theme whenever resolvedTheme changes - always use ref to avoid state reset issues
@@ -71,24 +93,7 @@ export function ThemeChanger() {
 
     // Apply theme using the verified value
     applyTheme(themeToApply, resolvedTheme)
-  }, [mounted, resolvedTheme]) // Only depend on resolvedTheme, not currentTheme
-
-  const applyTheme = (themeName: ThemeColor, mode?: string | null) => {
-    const themeConfig = themes[themeName]
-    // Use resolvedTheme or fallback to systemTheme, default to "light"
-    const effectiveMode = mode ?? systemTheme ?? "light"
-    const isDark = effectiveMode === "dark"
-    const colors = isDark ? themeConfig.dark : themeConfig.light
-
-    // Use double requestAnimationFrame to ensure DOM is updated after dark class change
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        Object.entries(colors).forEach(([key, value]) => {
-          document.documentElement.style.setProperty(`--${key}`, value)
-        })
-      })
-    })
-  }
+  }, [mounted, resolvedTheme, applyTheme])
 
   const handleThemeChange = (themeName: ThemeColor) => {
     // Update ref first to ensure persistence

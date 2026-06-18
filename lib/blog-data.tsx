@@ -700,6 +700,31 @@ Start with a simple launch implementation, add grade passback when needed, and e
   },
 ]
 
+const sidebarCategoryOrder = ["ai", "frontend", "systems", "design"]
+
+const sidebarCategoryLabels: Record<string, string> = {
+  ai: "AI & Machine Learning",
+  frontend: "Frontend",
+  systems: "Systems & DevOps",
+  design: "Design",
+}
+
+export function getBlogSidebarCategories() {
+  const categoryCounts = blogPosts.reduce<Record<string, number>>((counts, post) => {
+    counts[post.category] = (counts[post.category] ?? 0) + 1
+    return counts
+  }, {})
+
+  return [
+    { name: "All Posts", count: blogPosts.length, slug: "all" },
+    ...sidebarCategoryOrder.map((slug) => ({
+      name: sidebarCategoryLabels[slug] ?? slug,
+      count: categoryCounts[slug] ?? 0,
+      slug,
+    })),
+  ]
+}
+
 export function getPostBySlug(slug: string): BlogPost | undefined {
   return blogPosts.find((post) => post.slug === slug)
 }

@@ -1,4 +1,5 @@
 import type { BlogPost } from './blog-data'
+import { SITE_URL } from './site'
 
 export function generateBlogPostStructuredData(post: BlogPost, url: string) {
   return {
@@ -17,7 +18,7 @@ export function generateBlogPostStructuredData(post: BlogPost, url: string) {
     publisher: {
       '@type': 'Person',
       name: 'Nihar Bhatt',
-      url: 'https://nb-portfolio.vercel.app',
+      url: SITE_URL,
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
@@ -57,8 +58,8 @@ export function generatePersonStructuredData() {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: 'Nihar Bhatt',
-    url: 'https://nb-portfolio.vercel.app',
-    image: 'https://nb-portfolio.vercel.app/developer-portrait.png',
+    url: SITE_URL,
+    image: `${SITE_URL}/developer-portrait.png`,
     sameAs: [
       'https://github.com/nihar0123',
       'https://www.linkedin.com/in/nihar-bhatt-22762b256',

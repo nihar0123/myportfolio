@@ -74,7 +74,9 @@ export function ProjectsPageContent() {
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    setIsVisible(true)
+    const frame = requestAnimationFrame(() => setIsVisible(true))
+
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   const filteredProjects = projects.filter((p) => {
