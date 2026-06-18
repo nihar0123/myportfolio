@@ -71,8 +71,10 @@ const markdownComponents: Components = {
       {children}
     </pre>
   ),
-  code: ({ inline, className, children, ...props }) => {
-    if (inline) {
+  code: ({ className, children, ...props }) => {
+    const isBlockCode = typeof className === "string" && className.includes("language-")
+
+    if (!isBlockCode) {
       return (
         <code className="rounded bg-secondary/60 px-1.5 py-0.5 font-mono text-sm text-primary" {...props}>
           {children}
